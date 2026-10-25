@@ -3,7 +3,7 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { Category, MenuItem } from '@/lib/types';
 import Link from 'next/link';
-import { ArrowRight, UtensilsCrossed, MapPin, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowRight, UtensilsCrossed, MapPin, CheckCircle2, Info } from 'lucide-react';
 import { formatPrice } from '@/lib/pricing';
 
 export default async function HomePage() {
@@ -24,8 +24,8 @@ export default async function HomePage() {
     .filter(i => i.is_available && i.price !== null)
     .slice(0, 6);
 
-  const availableCount = (items || []).filter(i => i.is_available).length;
-  const pricedCount = (items || []).filter(i => i.price !== null).length;
+  const orderableCount = (items || []).filter(i => i.is_available && i.price !== null).length;
+  const unpricedCount = (items || []).filter(i => i.price === null).length;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -72,18 +72,18 @@ export default async function HomePage() {
       </section>
 
       {/* Menu Status Notice */}
-      {availableCount === 0 && (
+      {unpricedCount > 0 && (
         <div className="bg-accent/50 border-y border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-champagne-dark shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-champagne-dark shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-charcoal">
-                  Menu prices are pending owner verification
+                  {orderableCount} dishes available for online ordering
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  All {pricedCount} priced items will become available for ordering once the restaurant owner approves them.
-                  Currently {availableCount} items are enabled for online ordering.
+                  {unpricedCount} dishes are listed without prices and can be ordered in person only.
+                  Prices will be added as the owner confirms them.
                 </p>
               </div>
             </div>
